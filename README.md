@@ -73,7 +73,7 @@ school-attendance-system/
 
 ```bash
 git clone <your-github-repo-url>
-cd school-attendance-system
+cd school-attendance
 ```
 
 ---
