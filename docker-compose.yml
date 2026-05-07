@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+  auth-service:
+    build: ./auth-service
+    container_name: auth-service
+    ports:
+      - "8081:8081"
+    networks:
+      - school-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8081/api/auth/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  student-service:
+    build: ./student-service
+    container_name: student-service
+    ports:
+      - "8082:8082"
+    networks:
+      - school-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8082/api/students/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  attendance-service:
+    build: ./attendance-service
+    container_name: attendance-service
+    ports:
+      - "8083:8083"
+    networks:
+      - school-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8083/api/attendance/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  frontend:
+    build: ./frontend
+    container_name: frontend
+    ports:
+      - "4200:80"
+    networks:
+      - school-network
+    depends_on:
+      - auth-service
+      - student-service
+      - attendance-service
+    restart: unless-stopped
+
+networks:
+  school-network:
+    driver: bridge
